@@ -112,7 +112,7 @@ const Lab5 = (app) => {
         res.json(todo);
     });
 
-    // Retrieve ToDos
+    // ToDos - Retrieve
     app.get("/a5/todos", (req, res) => {
         const { completed } = req.query;
         if (completed !== undefined) {
