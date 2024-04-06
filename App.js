@@ -7,6 +7,10 @@ import ModuleRoutes from './Kanbas/Modules/routes.js'
 import AssignmentRoutes from './Kanbas/Assignments/routes.js'
 
 const app = express()
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  });
 app.use(cors())
 app.use(express.json())
 
