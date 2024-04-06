@@ -16,6 +16,17 @@ function AssignmentRoutes(app) {
         res.send(assignments);
     });
 
+    // Assignment - Read Single
+    app.get("/api/courses/:cid/assignments/:aid", (req, res) => {
+        const { aid } = req.params;
+        const assignment = db.assignments.find((a) => a._id === aid);
+        if (assignment) {
+            res.send(assignment);
+        } else {
+            res.status(404).send({ message: "Assignment not found" });
+        }
+    });
+
     // Assignment - Update
     app.put("/api/assignments/:aid", (req, res) => {
         const { aid } = req.params;
