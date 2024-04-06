@@ -17,7 +17,7 @@ function ModuleRoutes(app) {
     });
 
     // Module - Update
-    app.put("/api/modules/:mid", (req, res) => {
+    app.put("/api/courses/:cid/modules/:mid", (req, res) => {
         const { mid } = req.params;
         const moduleIndex = db.modules.findIndex((m) => m._id === mid);
         db.modules[moduleIndex] = {...db.modules[moduleIndex], ...req.body};
@@ -25,7 +25,7 @@ function ModuleRoutes(app) {
       });    
 
     // Module - Delete
-    app.delete("/api/modules/:mid", (req, res) => {
+    app.delete("/api/courses/:cid/modules/:mid", (req, res) => {
         const { mid } = req.params;
         db.modules = db.modules.filter((m) => m._id !== mid);
         res.sendStatus(200);
