@@ -22,7 +22,7 @@ function ModuleRoutes(app) {
         const moduleIndex = db.modules.findIndex((m) => m._id === mid);
         db.modules[moduleIndex] = {...db.modules[moduleIndex], ...req.body};
         res.sendStatus(204);
-      });    
+      });
 
     // Module - Delete
     app.delete("/api/modules/:mid", (req, res) => {
