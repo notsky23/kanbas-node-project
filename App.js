@@ -39,9 +39,10 @@ const port = process.env.PORT || 4000;
 
 const sessionOptions = {
   // secret: "any string",
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
   saveUninitialized: false,
+  cookie: {}
 };
 if (process.env.NODE_ENV !== "development") {
   sessionOptions.proxy = true;
