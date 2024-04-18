@@ -11,10 +11,16 @@ import moduleRoutes from './Kanbas/Modules/routes.js'
 import assignmentRoutes from './Kanbas/Assignments/routes.js'
 import UserRoutes from './Kanbas/Users/routes.js'
 import session from 'express-session'
-import MongoStore from 'connect-mongo';
 import "dotenv/config";
 
 const CONNECTION_STRING = process.env.DB_CONNECTION_STRING || 'mongodb://127.0.0.1:27017/kanbas';
+// mongoose.connect(CONNECTION_STRING);
+// mongoose.connect("mongodb://127.0.0.1:27017/kanbas");
+// const db_url = "mongodb+srv://notsky:kanbas123@cluster0.ury6qm1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const connectionParams = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}
 mongoose.connect(CONNECTION_STRING).then(() => {
   console.info('Connected to database');
 }).catch((err) => {
@@ -22,14 +28,18 @@ mongoose.connect(CONNECTION_STRING).then(() => {
 });
 
 const app = express()
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  });
 app.use(express.json());
+const port = process.env.PORT || 4000;
 
 const sessionOptions = {
   // secret: "any string",
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: CONNECTION_STRING }),
   cookie: {}
 };
 if (process.env.NODE_ENV !== "development") {
@@ -59,7 +69,4 @@ moduleRoutes(app);
 assignmentRoutes(app);
 UserRoutes(app);
 
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+app.listen(process.env.PORT || 4000);
