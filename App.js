@@ -34,13 +34,6 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
     next();
   });
-app.use(
-  cors({
-    credentials: true,
-    // origin: "http://localhost:3000",
-    origin: process.env.FRONTEND_URL,
-  })
-);
 app.use(express.json());
 const port = process.env.PORT || 4000;
 
@@ -59,6 +52,13 @@ if (process.env.NODE_ENV !== "development") {
   }
 }
 app.use(session(sessionOptions));
+app.use(
+  cors({
+    credentials: true,
+    // origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
+  })
+);
 
 Hello(app);
 Lab5(app);
