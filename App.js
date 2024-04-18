@@ -39,12 +39,24 @@ if (process.env.NODE_ENV !== "development") {
   }
 }
 app.use(session(sessionOptions));
-app.use(
-  cors({
-    credentials: true,
-    origin: process.env.FRONTEND_URL,
-  })
-);
+
+const allowedDomains = [
+  'https://stalwart-gingersnap-b465f3.netlify.app',
+  'https://a5--stalwart-gingersnap-b465f3.netlify.app',
+  'https://a6--stalwart-gingersnap-b465f3.netlify.app',
+  process.env.FRONTEND_URL // Assuming this is set in your environment variables
+];
+const corsOptions = {
+  credentials: true, // This allows the server to accept credentials (cookies, authorization headers, etc.) from the origin
+  origin: function (origin, callback) {
+    if (!origin || allowedDomains.indexOf(origin) !== -1) {
+      callback(null, true); // Allow the request if the origin is in the allowedDomains list or not present (CORS pre-flight requests)
+    } else {
+      callback(new Error('Not allowed by CORS')); // Reject other origins
+    }
+  }
+};
+app.use(cors(corsOptions)); 
 
 Hello(app);
 Lab5(app);
