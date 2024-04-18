@@ -1,56 +1,61 @@
-import db from "../Database/index.js";
+import * as assignmentDao from './dao.js';
 
-function AssignmentRoutes(app) {
-    // Assignment - Create
-    app.post("/api/courses/:cid/assignments", (req, res) => {
-        const { cid } = req.params;
-        const newAssignment = {...req.body, course: cid, _id: new Date().getTime().toString()};
-        db.assignments.push(newAssignment);
-        res.send(newAssignment);
-    });
+// let currentUser = null;
 
-    // Assignment - Read
-    app.get("/api/courses/:cid/assignments", (req, res) => {
-        const { cid } = req.params;
-        const assignments = db.assignments.filter((a) => a.course === cid);
-        res.send(assignments);
-    });
-
-    // Assignment - Read Single
-    app.get("/api/courses/:cid/assignments/:aid", (req, res) => {
-        const { aid } = req.params;
-        const assignment = db.assignments.find((a) => a._id === aid);
-        if (assignment) {
-            res.send(assignment);
-        } else {
-            res.status(404).send({ message: "Assignment not found" });
+export default function assignmentRoutes(app) {
+    const createAssignment = async (req, res) => {
+        try {
+            const assignmentData = { ...req.body, course: req.params.cid };
+            const assignment = await assignmentDao.createAssignment(assignmentData)
+            res.json(assignment);
+        } catch (error) {
+            res.status(500).json({ message: "Internal server error", error: error.message });
+        } 
+    };
+    const findAllAssignments = async (req, res) => {
+        try {
+            const courseId = req.params.cid;
+            if (!courseId) {
+                return res.status(400).json({ message: "Course ID is missing." });
+            }
+            const assignments = await assignmentDao.findAllAssignmentsByCourse(req.params.cid);
+            res.json(assignments);
+        } catch (error) {
+            res.status(500).json({ message: "Internal server error", error: error.message });
         }
-    });
-
-    // Assignment - Update
-    app.put("/api/assignments/:aid", (req, res) => {
-        const { aid } = req.params;
-        const assignmentIndex = db.assignments.findIndex((a) => a._id === aid);
-        if(assignmentIndex !== -1) {
-            db.assignments[assignmentIndex] = {...db.assignments[assignmentIndex], ...req.body};
-            res.sendStatus(204);
-        } else {
-            res.sendStatus(404);
+    };
+    const findAssignmentById = async (req, res) => {
+        try {
+            const courseId = req.params.cid;
+            const assignmentId = req.params.aid;
+            const assignment = await assignmentDao.findAssignmentById(courseId, assignmentId);
+            if (!assignment) {
+                return res.status(404).json({ message: "Assignment not found" });
+            }
+            res.json(assignment);
+        } catch (error) {
+            res.status(500).json({ message: "Internal server error", error: error.message });
         }
-    });
-
-    // Assignment - Delete
-    app.delete("/api/assignments/:aid", (req, res) => {
-        const { aid } = req.params;
-        const initialLength = db.assignments.length;
-        db.assignments = db.assignments.filter((a) => a._id !== aid);
-        const newLength = db.assignments.length;
-        if(newLength < initialLength) {
-            res.sendStatus(200);
-        } else {
-            res.sendStatus(404);
+    }
+    const updateAssignment = async (req, res) => {
+        try {
+            const updatedAssignment = await assignmentDao.updateAssignment(req.params.aid, req.body);
+            if (!updatedAssignment) {
+                return res.status(404).json({ message: "Assignment not found" });
+            }
+            res.json(updatedAssignment);
+        } catch (error) {
+            res.status(500).json({ message: "Internal server error", error: error.message });
         }
-    });
+    };
+    const deleteAssignment = async (req, res) => {
+        const status = await assignmentDao.deleteAssignment(req.params.aid)
+        res.json(status);
+    };
+
+    app.post("/api/courses/:cid/assignments", createAssignment);
+    app.get("/api/courses/:cid/assignments", findAllAssignments);
+    app.get("/api/courses/:cid/assignments/:aid", findAssignmentById);
+    app.put("/api/assignments/:aid", updateAssignment);
+    app.delete("/api/assignments/:aid", deleteAssignment);
 }
-
-export default AssignmentRoutes;
