@@ -21,13 +21,11 @@ const connectionParams = {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }
-mongoose.connect(CONNECTION_STRING, connectionParams).then(() => {
-// mongoose.connect("mongodb://127.0.0.1:27017/kanbas", connectionParams).then(() => {
-  console.info('Connected to database')
-  }).catch((err) => {
-    console.error('Error', err);
-  }
-);
+mongoose.connect(CONNECTION_STRING).then(() => {
+  console.info('Connected to database');
+}).catch((err) => {
+  console.error('Error connecting to MongoDB:', err);
+});
 
 const app = express()
 app.use((req, res, next) => {
