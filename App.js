@@ -45,6 +45,8 @@ const allowedDomains = [
   'https://a5--stalwart-gingersnap-b465f3.netlify.app',
   'https://a6--stalwart-gingersnap-b465f3.netlify.app',
   'https://main--stalwart-gingersnap-b465f3.netlify.app',
+  'https://harmonious-cannoli-f4be26.netlify.app',
+  'https://main--harmonious-cannoli-f4be26.netlify.app',
   process.env.FRONTEND_URL // Assuming this is set in your environment variables
 ];
 const corsOptions = {
