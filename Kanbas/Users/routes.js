@@ -49,8 +49,8 @@ export default function UserRoutes(app) {
         try {
             const status = await dao.updateUser(userId, req.body);
             const updatedUser = await dao.findUserById(userId);
-            if (req.session["currenUser"] && req.session["currenUser"]._id === userId) {
-                req.session["currenUser"] = updatedUser;
+            if (req.session["currentUser"] && req.session["currentUser"]._id === userId) {
+                req.session["currentUser"] = updatedUser;
             }
             // console.log(currentUser);
             res.json(status);
@@ -83,13 +83,17 @@ export default function UserRoutes(app) {
     };
     const signin = async (req, res) => {
         const { username, password } = req.body;
-        const currentUser = await dao.findUserByCredentials(username, password);
-        // console.log(currentUser);
-        if (currentUser) {
-            req.session["currentUser"] = currentUser;
-            res.json(currentUser);
-        } else {
-            res.sendStatus(401);
+        try {
+            const currentUser = await dao.findUserByCredentials(username, password);
+            if (currentUser) {
+                req.session.currentUser = currentUser; // Storing user data in the session
+                res.json(currentUser); // Send back the user info as confirmation
+            } else {
+                res.status(401).json({ message: "Invalid credentials" });
+            }
+        } catch (error) {
+            console.error('Error during sign in:', error);
+            res.status(500).json({ message: "Internal server error" });
         }
     };
     const signout = async (req, res) => {
@@ -109,8 +113,17 @@ export default function UserRoutes(app) {
         }
         // res.json(currentUser);
     };
+    const checkSession = async (req, res) => {
+        if (req.session && req.session.currentUser) {
+            res.json({ user: req.session.currentUser });
+        } else {
+            res.status(401).json({ user: null });
+        }
+    };
+
     app.post("/api/users", createUser);
     app.get("/api/users", findAllUsers);
+    app.get("/api/users/checkSession", checkSession);
     app.get("/api/users/:userId", findUserById);
     app.put("/api/users/:userId", updateUser);
     app.delete("/api/users/:userId", deleteUser);
