@@ -45,10 +45,10 @@ const sessionOptions = {
 
 if (process.env.NODE_ENV === 'production') {
   sessionOptions.cookie.secure = false; // ensure secure cookie in production
-  sessionOptions.proxy = false;
+  app.set('trust proxy', 1);
 }
 
-app.use(session(sessionOptions));
+app.use(session({ ...sessionOptions, cookie: { httpOnly: false, secure: false }}));
 
 // if (process.env.NODE_ENV !== "development") {
 //   sessionOptions.proxy = true;
