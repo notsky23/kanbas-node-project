@@ -43,10 +43,10 @@ const sessionOptions = {
   }
 };
 
-if (process.env.NODE_ENV === 'production') {
-  sessionOptions.cookie.secure = true; // ensure secure cookie in production
-  sessionOptions.proxy = true;
-}
+// if (process.env.NODE_ENV === 'production') {
+//   sessionOptions.cookie.secure = true; // ensure secure cookie in production
+//   sessionOptions.proxy = true;
+// }
 
 app.use(session(sessionOptions));
 
