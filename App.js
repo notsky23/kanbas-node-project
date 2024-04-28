@@ -29,23 +29,26 @@ app.use(express.json());
 app.use(cookieParser());
 
 const sessionOptions = {
+  // secret: "any string",
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === "production", // Secure cookies should ideally be true in production if using HTTPS
-    sameSite: 'Lax', // 'None' if your client is served from a different domain and your site uses HTTPS
-    httpOnly: true, // Set to true to prevent client-side JS from accessing the cookie
+    // secure: process.env.NODE_ENV === "production", // Secure cookies only in production
+    // sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Required to send cookies with cross-origin requests. 'None' requires secure=true
+    secure: false,
+    sameSite: 'Lax',
+    httpOnly: false, // Prevent client-side JS from accessing the cookie
     maxAge: 24 * 60 * 60 * 1000 // Cookie expiration set to 24 hours
   }
 };
 
 if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', 1); // Trust the first proxy, crucial for Heroku and other cloud providers
-  sessionOptions.cookie.secure = true; // Ensure cookies are served over HTTPS
+  sessionOptions.cookie.secure = false; // ensure secure cookie in production
+  sessionOptions.proxy = true;
 }
 
-// app.use(session({ ...sessionOptions, cookie: { httpOnly: false, secure: false }}));
+app.use(session(sessionOptions));
 
 // if (process.env.NODE_ENV !== "development") {
 //   sessionOptions.proxy = true;
@@ -76,8 +79,7 @@ const corsOptions = {
     }
   }
 };
-app.use(cors({ origin: '*', credentials: true }));
-app.use(session({ ...sessionOptions, cookie: { httpOnly: true, secure: false }}));
+app.use(cors(corsOptions)); 
 
 app.use((req, res, next) => {
   console.log('Cookies:', req.cookies);
