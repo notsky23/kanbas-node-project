@@ -6,18 +6,21 @@ const TrueFalseAnswerSchema = new Schema({
   _id: String,
   blankIndex: Number,
   answer: String,
+  correct: Boolean,
 });
 
 const MultipleChoiceAnswerSchema = new Schema({
   _id: String,
   blankIndex: Number,
   answer: String,
+  correct: Boolean,
 });
 
 const FillInBlankAnswerSchema = new Schema({
   _id: String,
   blankIndex: Number,
   answer: String,
+  correct: Boolean,
 });
 
 // Define a base question schema to use for different question types
@@ -31,6 +34,7 @@ const BaseQuestionSchema = new Schema({
     _id: String,
     blankIndex: Number,
     answer: String,
+    correct: Boolean,
   }, { discriminatorKey: 'kind', _id: false })] // Adding discriminatorKey
 }, { discriminatorKey: 'type' });
 
