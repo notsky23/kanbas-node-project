@@ -34,17 +34,17 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: false,
   cookie: {
-    // secure: process.env.NODE_ENV === "production", // Secure cookies only in production
-    // sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Required to send cookies with cross-origin requests. 'None' requires secure=true
-    secure: false,
-    sameSite: 'Lax',
-    httpOnly: false, // Prevent client-side JS from accessing the cookie
+    secure: process.env.NODE_ENV === "production", // Secure cookies only in production
+    sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Required to send cookies with cross-origin requests. 'None' requires secure=true
+    // secure: false,
+    // sameSite: 'Lax',
+    httpOnly: true, // Prevent client-side JS from accessing the cookie
     maxAge: 24 * 60 * 60 * 1000 // Cookie expiration set to 24 hours
   }
 };
 
 if (process.env.NODE_ENV === 'production') {
-  sessionOptions.cookie.secure = false; // ensure secure cookie in production
+  sessionOptions.cookie.secure = true; // ensure secure cookie in production
   sessionOptions.proxy = true;
 }
 
@@ -67,7 +67,7 @@ const allowedDomains = [
   'http://localhost:3000',
   'https://harmonious-cannoli-f4be26.netlify.app',
   'https://main--harmonious-cannoli-f4be26.netlify.app',
-  // process.env.FRONTEND_URL
+  process.env.FRONTEND_URL
 ];
 const corsOptions = {
   credentials: true, // This allows the server to accept credentials (cookies, authorization headers, etc.) from the origin
