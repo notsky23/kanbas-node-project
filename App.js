@@ -28,47 +28,27 @@ app.use(express.json());
 // Middleware for parsing URL-encoded bodies
 app.use(cookieParser());
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const sessionOptions = {
-  // secret: "any string",
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === "production", // Secure cookies only in production
-    sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Required to send cookies with cross-origin requests. 'None' requires secure=true
-    // secure: false,
-    // sameSite: 'Lax',
-    httpOnly: true, // Prevent client-side JS from accessing the cookie
-    maxAge: 24 * 60 * 60 * 1000 // Cookie expiration set to 24 hours
-  }
+    secure: isProduction, // Set secure only in production.
+    sameSite: isProduction ? 'None' : 'Lax', // Use 'None' in production with secure, 'Lax' otherwise.
+    httpOnly: true, // Always true to prevent access from client-side scripts.
+    maxAge: 24 * 60 * 60 * 1000 // Cookie expires after 24 hours.
+  },
+  proxy: isProduction // Set proxy true in production if behind a reverse proxy.
 };
-
-if (process.env.NODE_ENV === 'production') {
-  sessionOptions.cookie.secure = true; // ensure secure cookie in production
-  sessionOptions.proxy = true;
-}
-
 app.use(session(sessionOptions));
-
-// if (process.env.NODE_ENV !== "development") {
-//   sessionOptions.proxy = true;
-//   sessionOptions.cookie = {
-//     sameSite: "none",
-//     secure: true,
-//     domain: process.env.HTTP_SERVER_DOMAIN,
-//   }
-// }
-// Adjust session cookie settings for production
-// if (process.env.NODE_ENV === "production") {
-//   sessionOptions.cookie.secure = true; // Enable secure cookies on production
-// }
 
 const allowedDomains = [
   'http://localhost:3000',
   'https://harmonious-cannoli-f4be26.netlify.app',
   'https://main--harmonious-cannoli-f4be26.netlify.app',
-  process.env.FRONTEND_URL
-];
+].concat(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []);
 const corsOptions = {
   credentials: true, // This allows the server to accept credentials (cookies, authorization headers, etc.) from the origin
   origin: function (origin, callback) {
