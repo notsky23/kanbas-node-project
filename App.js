@@ -1,9 +1,11 @@
+import dotenv from 'dotenv'
+dotenv.config();
 import express from 'express'
 import mongoose from 'mongoose'
 import session from 'express-session'
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
-import "dotenv/config";
+// import "dotenv/config";
 
 import Hello from './Hello.js'
 import Lab5 from './Lab5.js'
@@ -29,7 +31,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 const isProduction = process.env.NODE_ENV === 'production';
-
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
@@ -64,6 +65,7 @@ app.use(cors(corsOptions));
 app.use((req, res, next) => {
   console.log('Cookies:', req.cookies);
   console.log('Session:', req.session);
+  console.log("Environment:", process.env.NODE_ENV);
   next();
 });
 
